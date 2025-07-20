@@ -19,6 +19,7 @@ function App() {
   });
 
   const [selectedCategory, setSelectedCategory] = useState("All");
+  const [searchQuery, setSearchQuery] = useState("");
 
   useEffect(() => {
     localStorage.setItem("cart", JSON.stringify(cart));
@@ -55,12 +56,16 @@ function App() {
     return wishlist.some((item) => item.id === product.id);
   };
 
-  const filteredProducts =
-    selectedCategory === "All"
-      ? products
-      : products.filter((p) => p.category === selectedCategory);
-
   const categories = ["All", ...new Set(products.map((p) => p.category))];
+
+  const filteredProducts = products.filter((product) => {
+    const matchesCategory =
+      selectedCategory === "All" || product.category === selectedCategory;
+    const matchesSearch = product.name
+      .toLowerCase()
+      .includes(searchQuery.toLowerCase());
+    return matchesCategory && matchesSearch;
+  });
 
   return (
     <Router>
@@ -69,7 +74,9 @@ function App() {
           <h1>🛍️ Shop World</h1>
           <div>
             <Link to="/" className="btn btn-outline-primary me-2">🏠 Home</Link>
-            <Link to="/wishlist" className="btn btn-outline-danger me-2">💙 Wishlist ({wishlist.length})</Link>
+            <Link to="/wishlist" className="btn btn-outline-danger me-2">
+              💙 Wishlist ({wishlist.length})
+            </Link>
             <Link to="/cart" className="btn btn-success">🛒 Cart ({cart.length})</Link>
           </div>
         </div>
@@ -79,12 +86,23 @@ function App() {
             path="/"
             element={
               <>
-                <div className="mb-4">
+                <div className="mb-4 d-flex flex-wrap align-items-center">
+                  <div className="me-3 mb-2">
+                    <input
+                      type="text"
+                      placeholder="🔍 Search products..."
+                      value={searchQuery}
+                      onChange={(e) => setSearchQuery(e.target.value)}
+                      className="form-control"
+                    />
+                  </div>
                   {categories.map((cat) => (
                     <button
                       key={cat}
-                      className={`btn me-2 ${
-                        selectedCategory === cat ? "btn-primary" : "btn-outline-primary"
+                      className={`btn me-2 mb-2 ${
+                        selectedCategory === cat
+                          ? "btn-primary"
+                          : "btn-outline-primary"
                       }`}
                       onClick={() => setSelectedCategory(cat)}
                     >
@@ -115,7 +133,9 @@ function App() {
                             </button>
                             <button
                               className={`btn ${
-                                isWished(product) ? "btn-danger" : "btn-outline-danger"
+                                isWished(product)
+                                  ? "btn-danger"
+                                  : "btn-outline-danger"
                               }`}
                               onClick={() => toggleWishlist(product)}
                             >
@@ -133,7 +153,6 @@ function App() {
 
           <Route path="/cart" element={<CartPage cart={cart} setCart={setCart} />} />
           <Route path="/wishlist" element={<WishlistPage wishlist={wishlist} />} />
-          <Route path="/checkout" element={<CheckoutPage cart={cart} />} />
           <Route path="/checkout" element={<CheckoutPage cart={cart} setCart={setCart} />} />
           <Route path="/confirmation" element={<ConfirmationPage />} />
         </Routes>
