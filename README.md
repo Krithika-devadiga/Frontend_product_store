@@ -11,4 +11,12 @@ Shop World is a modern React-based e-commerce frontend application where users c
 - 🎨 **Responsive Design** – Works on desktops, tablets, and mobile devices.
 
 ## 📂 Folder Structure
-
+- `public/` – Contains the base HTML file (`index.html`)
+- `src/`
+  - `components/` – Includes React components like `ProductCard.js` and `Wishlist.js`
+  - `data/` – Contains `products.js` which holds product data
+  - `App.js` – Main app logic and routing
+  - `index.js` – Entry point of the React app
+  - `styles.css` – Application styling
+- `package.json` – Manages dependencies and scripts
+- `README.md` – Project documentation
